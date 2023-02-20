@@ -31,6 +31,10 @@
 
 namespace qjs {
 
+    inline void ignore_unused_JSValue(JSValue) {}
+    inline void ignore_unused_int(int) {}
+    inline void ignore_unused_ptr(void*) {}
+
 class Context;
 class Value;
 
@@ -88,6 +92,7 @@ struct js_traits<JSValue>
 
     static JSValue wrap(JSContext * ctx, JSValue&& v) noexcept
     {
+        ignore_unused_ptr((void*)(ctx));
         return v;
     }
 };
@@ -551,6 +556,9 @@ struct unwrap_arg_impl<rest<T>, I, NArgs> {
 template <class Tuple, std::size_t... I>
 Tuple unwrap_args_impl(JSContext * ctx, int argc, JSValueConst * argv, std::index_sequence<I...>)
 {
+    ignore_unused_ptr((void*)(ctx));
+    ignore_unused_ptr((void*)(argv));
+    ignore_unused_int(argc);
     return Tuple{unwrap_arg_impl<std::tuple_element_t<I, Tuple>, I, sizeof...(I)>::unwrap(ctx, argc, argv)...};
 }
 
@@ -1117,6 +1125,7 @@ struct js_traits<detail::function>
                 // call
                 [](JSContext * ctx, JSValueConst func_obj, JSValueConst this_val, int argc,
                    JSValueConst * argv, int flags) -> JSValue {
+                    ignore_unused_int(flags);
                     auto ptr = static_cast<detail::function *>(JS_GetOpaque2(ctx, func_obj, QJSClassId));
                     if(!ptr)
                         return JS_EXCEPTION;
@@ -2166,6 +2175,9 @@ inline Value exception::get() {
 inline void Runtime::promise_unhandled_rejection_tracker(JSContext *ctx, JSValueConst promise,
                                                          JSValueConst reason, JS_BOOL is_handled, void *opaque)
 {
+    ignore_unused_JSValue(promise);
+    ignore_unused_int(is_handled);
+    ignore_unused_ptr(opaque);
     auto & context = Context::get(ctx);
     if (context.onUnhandledPromiseRejection) {
         context.onUnhandledPromiseRejection(context.newValue(JS_DupValue(ctx, reason)));
@@ -2175,6 +2187,7 @@ inline void Runtime::promise_unhandled_rejection_tracker(JSContext *ctx, JSValue
 inline JSModuleDef * Runtime::module_loader(JSContext *ctx,
                                             const char *module_name, void *opaque)
 {
+    ignore_unused_ptr(opaque);
     Context::ModuleData data;
     auto & context = Context::get(ctx);
 

@@ -25,6 +25,8 @@
 #ifndef QUICKJS_H
 #define QUICKJS_H
 
+inline void ignore_unused_ptr(void*) {}
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -224,6 +226,7 @@ typedef struct JSValue {
 
 static inline JSValue __JS_NewFloat64(JSContext *ctx, double d)
 {
+    ignore_unused_ptr(ctx);
     JSValue v;
     v.tag = JS_TAG_FLOAT64;
     v.u.float64 = d;
@@ -505,16 +508,19 @@ int JS_IsRegisteredClass(JSRuntime *rt, JSClassID class_id);
 
 static js_force_inline JSValue JS_NewBool(JSContext *ctx, JS_BOOL val)
 {
+    ignore_unused_ptr(ctx);
     return JS_MKVAL(JS_TAG_BOOL, (val != 0));
 }
 
 static js_force_inline JSValue JS_NewInt32(JSContext *ctx, int32_t val)
 {
+    ignore_unused_ptr(ctx);
     return JS_MKVAL(JS_TAG_INT, val);
 }
 
 static js_force_inline JSValue JS_NewCatchOffset(JSContext *ctx, int32_t val)
 {
+    ignore_unused_ptr(ctx);
     return JS_MKVAL(JS_TAG_CATCH_OFFSET, val);
 }
 
@@ -572,6 +578,7 @@ static inline JS_BOOL JS_IsNumber(JSValueConst v)
 
 static inline JS_BOOL JS_IsBigInt(JSContext *ctx, JSValueConst v)
 {
+    ignore_unused_ptr(ctx);
     int tag = JS_VALUE_GET_TAG(v);
     return tag == JS_TAG_BIG_INT;
 }
@@ -663,6 +670,7 @@ static inline void JS_FreeValueRT(JSRuntime *rt, JSValue v)
 
 static inline JSValue JS_DupValue(JSContext *ctx, JSValueConst v)
 {
+    ignore_unused_ptr(ctx);
     if (JS_VALUE_HAS_REF_COUNT(v)) {
         JSRefCountHeader *p = (JSRefCountHeader *)JS_VALUE_GET_PTR(v);
         p->ref_count++;
@@ -672,6 +680,7 @@ static inline JSValue JS_DupValue(JSContext *ctx, JSValueConst v)
 
 static inline JSValue JS_DupValueRT(JSRuntime *rt, JSValueConst v)
 {
+    ignore_unused_ptr((void*)(rt));
     if (JS_VALUE_HAS_REF_COUNT(v)) {
         JSRefCountHeader *p = (JSRefCountHeader *)JS_VALUE_GET_PTR(v);
         p->ref_count++;
