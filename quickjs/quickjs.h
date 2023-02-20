@@ -25,7 +25,7 @@
 #ifndef QUICKJS_H
 #define QUICKJS_H
 
-inline void ignore_unused_ptr(void*) {}
+static inline void ignore_unused_ptr(void*) {}
 
 #include <stdio.h>
 #include <stdint.h>
