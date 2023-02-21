@@ -1941,6 +1941,7 @@ struct js_traits<std::function<R(Args...)>, int>
             auto fptr = function::create(JS_GetRuntime(ctx), std::forward<Functor>(functor));
             fptr->invoker = [](function * self, JSContext * ctx, JSValueConst this_value, int argc,
                                JSValueConst * argv) {
+                qjs::ignore_unused_JSValue(this_value);
                 assert(self);
                 auto f = reinterpret_cast<std::decay_t<Functor> *>(&self->functor);
                 return detail::wrap_call<R, Args...>(ctx, *f, argc, argv);
