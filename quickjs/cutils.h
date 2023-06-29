@@ -58,6 +58,17 @@ enum {
 };
 #endif
 
+#ifdef __GNUC__
+#define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#define FORMAT_PRINTF(F,A) __attribute__((format(printf, F, A)))
+#endif
+
+#ifdef _MSC_VER
+#define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop))
+#define FORMAT_PRINTF(F,A)
+#endif
+
+
 void pstrcpy(char *buf, int buf_size, const char *str);
 char *pstrcat(char *buf, int buf_size, const char *s);
 int strstart(const char *str, const char *val, const char **ptr);
@@ -135,17 +146,17 @@ static inline int ctz64(uint64_t a)
     return __builtin_ctzll(a);
 }
 
-struct __attribute__((packed)) packed_u64 {
+PACK(struct packed_u64 {
     uint64_t v;
-};
+});
 
-struct __attribute__((packed)) packed_u32 {
+PACK(struct packed_u32 {
     uint32_t v;
-};
+});
 
-struct __attribute__((packed)) packed_u16 {
+PACK(struct packed_u16 {
     uint16_t v;
-};
+});
 
 static inline uint64_t get_u64(const uint8_t *tab)
 {
@@ -262,7 +273,7 @@ static inline int dbuf_put_u64(DynBuf *s, uint64_t val)
 {
     return dbuf_put(s, (uint8_t *)&val, 8);
 }
-int __attribute__((format(printf, 2, 3))) dbuf_printf(DynBuf *s,
+int FORMAT_PRINTF(2,3) dbuf_printf(DynBuf *s,
                                                       const char *fmt, ...);
 void dbuf_free(DynBuf *s);
 static inline BOOL dbuf_error(DynBuf *s) {
