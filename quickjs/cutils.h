@@ -33,9 +33,24 @@
 
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
+//#define force_inline inline __attribute__((always_inline))
+//#define no_inline __attribute__((noinline))
+//#define __maybe_unused __attribute__((unused))
+
+#ifdef __GNUC__
 #define force_inline inline __attribute__((always_inline))
 #define no_inline __attribute__((noinline))
 #define __maybe_unused __attribute__((unused))
+
+#define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#define FORMAT_PRINTF(F,A) __attribute__((format(printf, F, A)))
+#endif
+
+#ifdef _MSC_VER
+#define force_inline inline __forceinline
+#define no_inline __declspec(noinline)
+#define __maybe_unused /*Empty*/
+#endif
 
 #define xglue(x, y) x ## y
 #define glue(x, y) xglue(x, y)
